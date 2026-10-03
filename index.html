@@ -207,7 +207,9 @@ const AREAS = [
 { id:'psh', sigla:'PSH', nombre:'Psicosocial y Humanitaria', rol:'Atención psicosocial', pre:'PSH', form:'Registro de atención psicosocial',
   sections:[
    ['Datos del evento',[F('fecha','Fecha','date',{req:1,half:1}),F('hora','Hora','time',{req:1,half:1}),F('municipio','Municipio','text',{req:1,half:1}),F('lugar','Vereda, barrio o sector','text',{half:1}),
-     F('tipoEvento','Evento que originó la atención','select',{req:1,o:['Accidente de tránsito','Búsqueda y rescate','Inundación / avenida torrencial','Deslizamiento','Incendio','Evento masivo / aglomeración','Emergencia médica','Crisis emocional individual','Crisis por violencia intrafamiliar o de género','Código Dorado','Duelo / notificación de fallecimiento','Apoyo emocional a integrantes del GRI','Actividad preventiva o psicoeducación','Otro']}),
+     F('tipoEvento','Evento que originó la atención','select',{req:1,o:['Accidente de tránsito','Búsqueda y rescate','Inundación / avenida torrencial','Deslizamiento','Incendio','Evento masivo / aglomeración','Emergencia médica','Fallecimiento','No aplica (atención directa o actividad programada)','Otro']}),
+     F('motivo','Motivo de la atención psicosocial','select',{req:1,o:['Crisis emocional individual','Crisis por violencia intrafamiliar o de género','Código Dorado','Duelo / notificación de fallecimiento','Apoyo emocional a integrantes del GRI','Actividad preventiva o psicoeducación','Otro']}),
+     F('_cd','<b>Código Dorado:</b> no dejes sola a la persona, avisa de inmediato a la coordinación y activa la ruta (urgencias o Línea 106; en emergencia, 123). Marca el riesgo en Valoración y registra la remisión en Cierre.','note',{s:r=>r.motivo==='Código Dorado'}),
      F('descripcionEvento','Descripción breve de la situación','textarea',{ph:'Qué pasó y cómo llegó el caso a PSH'})]],
    ['Persona atendida',[F('anonimo','La persona no se identificó o no quiso dar sus datos','check'),
      F('nombre','Nombre completo','text',{half:1,s:r=>!r.anonimo}),F('documento','Documento','text',{half:1,s:r=>!r.anonimo}),
@@ -226,10 +228,10 @@ const AREAS = [
      F('remisionOtra','¿A dónde?','text',{half:1,s:r=>r.remision==='Otra'}),
      F('seguimiento','¿Requiere seguimiento?','radio',{req:1,half:1,o:NOSI}),F('fechaSeguimiento','Fecha de seguimiento','date',{half:1,s:r=>r.seguimiento==='Sí'})]],
    persona(['Psicólogo(a)','Voluntario(a) PSH','Coordinador(a) PSH','Otro'],'La persona dio su consentimiento verbal para la atención y el registro de sus datos')],
-  date:r=>r.fecha, title:r=>`${r.tipoEvento} · ${r.municipio}`, sub:r=>r.anonimo?'Persona no identificada':(r.nombre||'Sin nombre'),
+  date:r=>r.fecha, title:r=>`${r.motivo||r.tipoEvento} · ${r.municipio}`, sub:r=>r.anonimo?'Persona no identificada':(r.nombre||'Sin nombre'),
   status:r=>({'Estable':'ok','Parcialmente estable':'warn','Requiere atención especializada':'bad'})[r.estadoFinal],
   follow:{when:r=>r.seguimiento==='Sí', label:'Seguimiento'},
-  charts:[['Tipos de intervención','intervencion'],['Eventos que originaron la atención','tipoEvento'],['Nivel de afectación','nivel'],['Remisiones','remision']],
+  charts:[['Motivo de la atención','motivo'],['Tipos de intervención','intervencion'],['Eventos que originaron la atención','tipoEvento'],['Nivel de afectación','nivel'],['Remisiones','remision']],
   kpis:[
    {id:'seg',n:'Seguimientos realizados',u:'%',dir:'up',meta:90,c:R=>{const s=R.filter(r=>r.seguimiento==='Sí');return pct(s.filter(r=>r.seguimientoRealizado).length,s.length)},h:'De las atenciones que requerían seguimiento'},
    {id:'riesgo',n:'Casos con riesgo remitidos',u:'%',dir:'up',meta:100,c:R=>{const s=R.filter(r=>r.riesgo==='Sí');return pct(s.filter(r=>r.remision&&r.remision!=='No requiere').length,s.length)},h:'Toda situación de riesgo debe tener remisión'},
