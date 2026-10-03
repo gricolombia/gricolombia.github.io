@@ -207,7 +207,7 @@ const AREAS = [
 { id:'psh', sigla:'PSH', nombre:'Psicosocial y Humanitaria', rol:'Atención psicosocial', pre:'PSH', form:'Registro de atención psicosocial',
   sections:[
    ['Datos del evento',[F('fecha','Fecha','date',{req:1,half:1}),F('hora','Hora','time',{req:1,half:1}),F('municipio','Municipio','text',{req:1,half:1}),F('lugar','Vereda, barrio o sector','text',{half:1}),
-     F('tipoEvento','Evento que originó la atención','select',{req:1,o:['Accidente de tránsito','Búsqueda y rescate','Inundación / avenida torrencial','Deslizamiento','Incendio','Evento masivo / aglomeración','Emergencia médica','Crisis emocional individual','Crisis por violencia intrafamiliar o de género','Riesgo o conducta suicida','Duelo / notificación de fallecimiento','Apoyo emocional a integrantes del GRI','Actividad preventiva o psicoeducación','Otro']}),
+     F('tipoEvento','Evento que originó la atención','select',{req:1,o:['Accidente de tránsito','Búsqueda y rescate','Inundación / avenida torrencial','Deslizamiento','Incendio','Evento masivo / aglomeración','Emergencia médica','Crisis emocional individual','Crisis por violencia intrafamiliar o de género','Código Dorado','Duelo / notificación de fallecimiento','Apoyo emocional a integrantes del GRI','Actividad preventiva o psicoeducación','Otro']}),
      F('descripcionEvento','Descripción breve de la situación','textarea',{ph:'Qué pasó y cómo llegó el caso a PSH'})]],
    ['Persona atendida',[F('anonimo','La persona no se identificó o no quiso dar sus datos','check'),
      F('nombre','Nombre completo','text',{half:1,s:r=>!r.anonimo}),F('documento','Documento','text',{half:1,s:r=>!r.anonimo}),
