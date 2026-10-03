@@ -161,6 +161,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);outline:none}
 .tab{background:none;border:0;padding:10px 4px 12px;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;cursor:pointer}
 .tab svg{width:22px;height:22px}
 .tab[aria-current=page]{color:var(--accent)}
+.offline{position:sticky;top:calc(env(safe-area-inset-top,0px) + 76px);z-index:4;max-width:760px;margin:8px auto 0;padding:8px 14px;border-radius:10px;background:color-mix(in srgb,var(--warn) 18%,var(--surface));border:1px solid var(--warn);color:var(--fg);font-size:13px;font-weight:600;text-align:center}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9;background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;font-size:14px;max-width:calc(100% - 32px)}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -173,6 +174,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);outline:none}
   </div>
   <svg class="pulse" viewBox="0 0 760 14" preserveAspectRatio="none" aria-hidden="true"><polyline fill="none" stroke="currentColor" stroke-width="2" points="0,9 340,9 352,9 360,2 368,13 376,4 384,11 392,9 760,9"/></svg>
 </header>
+<div class="wrap" style="padding-block:0"><div class="offline" id="offline" hidden>📶 Sin conexión: puedes seguir registrando. Se enviará solo cuando vuelva la señal.</div></div>
 <main class="wrap" id="app"></main>
 <nav class="tabs" aria-label="Secciones"><div class="tabs-in" id="tabs"></div></nav>
 <div class="toast" id="toast" hidden></div>
@@ -814,7 +816,7 @@ document.addEventListener('click',async e=>{
   if(e.target.closest('#logout')){await firebase.auth().signOut()}
 });
 function init(){
-  if(!FIREBASE_CONFIG||!FIREBASE_CONFIG.apiKey){S.ready=true;S.authError=true;render();return}
+  if(!FIREBASE_CONFIG||!FIREBASE_CONFIG.apiKey||typeof firebase==='undefined'){S.ready=true;S.authError=true;render();return}
   firebase.initializeApp(FIREBASE_CONFIG);
   S.db=firebase.firestore();
   S.db.enablePersistence({synchronizeTabs:true}).catch(()=>{});
@@ -827,6 +829,9 @@ function init(){
     render();
   });
 }
+const netState=()=>{const b=document.getElementById('offline');if(b)b.hidden=navigator.onLine};
+window.addEventListener('online',netState);window.addEventListener('offline',netState);netState();
+if('serviceWorker' in navigator&&location.protocol==='https:')window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 render();init();
 </script>
 </body></html>
